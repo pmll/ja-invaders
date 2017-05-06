@@ -1,0 +1,558 @@
+: file-comment ( setup user defined graphics and save to tape) ;
+
+2 base c!
+
+create player-graphics
+    00000000 c,
+    00001000 c,
+    00011100 c,
+    01111111 c,
+    11111111 c,
+    11111111 c,
+    11111111 c,
+    11111111 c,
+
+    00000000 c,
+    00000000 c,
+    00000000 c,
+    00000000 c,
+    10000000 c,
+    10000000 c,
+    10000000 c,
+    10000000 c,
+
+    00000000 c,
+    00000100 c,
+    00001110 c,
+    00111111 c,
+    01111111 c,
+    01111111 c,
+    01111111 c,
+    01111111 c,
+
+    00000000 c,
+    00000000 c,
+    00000000 c,
+    10000000 c,
+    11000000 c,
+    11000000 c,
+    11000000 c,
+    11000000 c,
+
+    00000000 c,
+    00000010 c,
+    00000111 c,
+    00011111 c,
+    00111111 c,
+    00111111 c,
+    00111111 c,
+    00111111 c,
+
+    00000000 c,
+    00000000 c,
+    00000000 c,
+    11000000 c,
+    11100000 c,
+    11100000 c,
+    11100000 c,
+    11100000 c,
+
+    00000000 c,
+    00000001 c,
+    00000011 c,
+    00001111 c,
+    00011111 c,
+    00011111 c,
+    00011111 c,
+    00011111 c,
+
+    00000000 c,
+    00000000 c,
+    10000000 c,
+    11100000 c,
+    11110000 c,
+    11110000 c,
+    11110000 c,
+    11110000 c,
+
+    00000000 c,
+    00000000 c,
+    00000001 c,
+    00000111 c,
+    00001111 c,
+    00001111 c,
+    00001111 c,
+    00001111 c,
+
+    00000000 c,
+    10000000 c,
+    11000000 c,
+    11110000 c,
+    11111000 c,
+    11111000 c,
+    11111000 c,
+    11111000 c,
+
+    00000000 c,
+    00000000 c,
+    00000000 c,
+    00000011 c,
+    00000111 c,
+    00000111 c,
+    00000111 c,
+    00000111 c,
+
+    00000000 c,
+    01000000 c,
+    11100000 c,
+    11111000 c,
+    11111100 c,
+    11111100 c,
+    11111100 c,
+    11111100 c,
+
+    00000000 c,
+    00000000 c,
+    00000000 c,
+    00000001 c,
+    00000011 c,
+    00000011 c,
+    00000011 c,
+    00000011 c,
+
+    00000000 c,
+    00100000 c,
+    01110000 c,
+    11111100 c,
+    11111110 c,
+    11111110 c,
+    11111110 c,
+    11111110 c,
+
+    00000000 c,
+    00000000 c,
+    00000000 c,
+    00000000 c,
+    00000001 c,
+    00000001 c,
+    00000001 c,
+    00000001 c,
+
+    00000000 c,
+    00010000 c,
+    00111000 c,
+    11111110 c,
+    11111111 c,
+    11111111 c,
+    11111111 c,
+    11111111 c,
+
+create missile-graphics
+    00000000 c,
+    10000000 c,
+    10000000 c,
+    10000000 c,
+    10000000 c,
+    10000000 c,
+    10000000 c,
+    10000000 c,
+
+    00000000 c,
+    01000000 c,
+    01000000 c,
+    01000000 c,
+    01000000 c,
+    01000000 c,
+    01000000 c,
+    01000000 c,
+
+    00000000 c,
+    00100000 c,
+    00100000 c,
+    00100000 c,
+    00100000 c,
+    00100000 c,
+    00100000 c,
+    00100000 c,
+
+    00000000 c,
+    00010000 c,
+    00010000 c,
+    00010000 c,
+    00010000 c,
+    00010000 c,
+    00010000 c,
+    00010000 c,
+
+    00000000 c,
+    00001000 c,
+    00001000 c,
+    00001000 c,
+    00001000 c,
+    00001000 c,
+    00001000 c,
+    00001000 c,
+
+    00000000 c,
+    00000100 c,
+    00000100 c,
+    00000100 c,
+    00000100 c,
+    00000100 c,
+    00000100 c,
+    00000100 c,
+
+    00000000 c,
+    00000010 c,
+    00000010 c,
+    00000010 c,
+    00000010 c,
+    00000010 c,
+    00000010 c,
+    00000010 c,
+
+    00000000 c,
+    00000001 c,
+    00000001 c,
+    00000001 c,
+    00000001 c,
+    00000001 c,
+    00000001 c,
+    00000001 c,
+
+create invader-graphics
+    00011000 c,
+    00111100 c,
+    01111110 c,
+    01011010 c,
+    01111110 c,
+    00100100 c,
+    01000010 c,
+    10000001 c,
+
+    00011000 c,
+    00111100 c,
+    01111110 c,
+    01011010 c,
+    01111110 c,
+    00100100 c,
+    01000010 c,
+    00100100 c,
+
+    00111100 c,
+    11111111 c,
+    10011001 c,
+    11111111 c,
+    01111110 c,
+    00100100 c,
+    01001000 c,
+    10010000 c,
+
+    00111100 c,
+    11111111 c,
+    10011001 c,
+    11111111 c,
+    01111110 c,
+    00100100 c,
+    00010010 c,
+    00001001 c,
+
+    00110110 c,
+    00100100 c,
+    01111110 c,
+    11011011 c,
+    11111111 c,
+    01111110 c,
+    00100100 c,
+    01000010 c,
+
+    01101100 c,
+    00100100 c,
+    01111110 c,
+    11011011 c,
+    11111111 c,
+    01111110 c,
+    00100100 c,
+    01000010 c,
+
+    00111100 c,
+    01111110 c,
+    01011010 c,
+    01111110 c,
+    00111100 c,
+    00111100 c,
+    01111110 c,
+    01010101 c,
+
+    00111100 c,
+    01111110 c,
+    01011010 c,
+    01111110 c,
+    00111100 c,
+    00111100 c,
+    01111110 c,
+    10101010 c,
+
+decimal
+
+0 constant player-gr
+24 constant missile-gr
+27 constant bomb-gr
+16 constant invader-gr
+
+1 constant ship-period
+0 variable ship-x
+0 variable old-ship-x
+22 constant ship-y
+0 variable life
+
+1 constant missile-period
+0 variable missile-x
+0 variable missile-y
+
+10 constant init-inv-period
+2 constant init-inv-start-y
+0 variable inv-period
+2 variable inv-start-y
+0 variable inv-x
+0 variable inv-y
+0 variable old-inv-x
+0 variable old-inv-y
+0 variable inv-dir
+0 variable leftmost-inv
+0 variable rightmost-inv
+0 variable bottommost-inv
+0 variable inv-anim-state
+0 variable invaders-left
+2 constant invader-alive
+1 constant invader-dying
+0 constant invader-dead
+
+create inv-state 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
+
+: copy-bytes ( from address, to address, length --)
+    0 do
+        over i + @
+        over i + !
+    2 +loop
+    drop drop
+;
+
+: copy-to-udg ( copy from address, first char num, number of chars)
+    swap 8 * 11264 +
+    swap 8 *
+    copy-bytes
+;
+
+: create-udgs ( user defined graphics for the game)
+    player-graphics player-gr 16 copy-to-udg
+    missile-graphics missile-gr 8 copy-to-udg
+    invader-graphics invader-gr 8 copy-to-udg 
+;
+
+16 base c!
+create disp-ship
+    06 c, 00 c, 21 c, C0 c, 26 c, 3A c, ship-x ,
+    4F c, CB c, 39 c, CB c, 39 c, CB c, 39 c, E6 c,
+    07 c, 57 c, CB c, 22 c, 21 c, C0 c, 26 c, 09 c,
+    3A c, old-ship-x , CB c, 3F c, CB c, 3F c, CB c,
+    3F c, B9 c, 28 c, 0E c, 38 c, 08 c, 23 c, 23 c,
+    36 c, 20 c, 2B c, 2B c, 18 c, 04 c, 2B c, 36 c,
+    20 c, 23 c, 72 c, 23 c, 14 c, 72 c, FD c, E9 c,
+
+decimal
+
+: move-ship ( process keyboard input and update player)
+    ship-x @ old-ship-x !
+    65278 in 4 and 0= if    ( left key pressed)
+        ship-x @ dup 0> if
+            1- ship-x !
+        else
+            drop
+        then
+    then
+    65278 in 8 and 0= if    ( right key pressed)
+        ship-x @ dup 247 < if
+            1+ ship-x !
+        else
+            drop
+        then
+    then
+;
+
+: move-missile
+    missile-y @
+    dup 0> if
+        ( move the missile up the screen)
+        1- missile-y !
+    else
+        drop
+        32766 in 1 and 0= if    ( fire key pressed)
+            [ ship-y 1- ] literal missile-y !
+            ship-x @ 4 + missile-x !
+        then
+    then
+;
+
+: move-down
+    inv-y @ 1+ inv-y !
+    inv-dir @ -1 * inv-dir !
+;
+
+: move-invaders
+    inv-x @ old-inv-x !
+    inv-y @ old-inv-y !
+    inv-dir @
+    1 =
+    if
+        ( moving right...)
+        inv-x @ rightmost-inv @ 2 * + 31 =
+        if
+            move-down
+        else
+            inv-x @ 1+ inv-x !
+        then
+    else
+        ( moving left...)
+        inv-x @ leftmost-inv @ 2 * + 0=
+        if
+            move-down
+        else
+            inv-x @ 1- inv-x !
+        then
+    then
+;
+
+: init-invaders
+    init-inv-period inv-period !
+    inv-start-y @ dup inv-y ! old-inv-y !
+    0 inv-x ! 0 old-inv-x !
+    1 inv-dir !
+    inv-state
+    8 4 * 0 do
+        dup invader-alive swap c!
+        1+
+    loop
+    drop
+;
+
+16 base c!
+
+create xyadd
+    21 c, 00 c, 24 c, 78 c, 06 c, 00 c, CB c, 21 c,
+    CB c, 21 c, CB c, 21 c, CB c, 21 c, CB c, 10 c,
+    CB c, 21 c, CB c, 10 c, 09 c, 06 c, 00 c, 4F c,
+    CB c, 79 c, 28 c, 02 c, 06 c, FF c, 09 c, C9 c,
+
+create update-inv-stats
+    7A c, 32 c, bottommost-inv , 3A c, leftmost-inv , BB c,
+    30 c, 04 c, 7B c, 32 c, leftmost-inv , 3A c, rightmost-inv ,
+    BB c, 38 c, 04 c, 7B c, 32 c, rightmost-inv ,
+    3A c, invaders-left , 3C c, 32 c, invaders-left , C9 c,
+
+create disp-invaders
+    3E c, 00 c, 32 c, invaders-left , 32 c, leftmost-inv ,
+    3E c, 09 c, 32 c, rightmost-inv , 32 c, bottommost-inv ,
+    3A c, inv-anim-state , EE c, 01 c, 32 c, inv-anim-state ,
+    3E c, 02 c, 32 c, invaders-left 1+ , 3A c, invaders-left 1+ ,
+    FE c, 02 c, 28 c, 0A c, 3A c, inv-x , 47 c,
+    3A c, inv-y , 4F c, 18 c, 08 c, 3A c, old-inv-x ,
+    47 c, 3A c, old-inv-y , 4F c, CD c, xyadd ,
+    01 c, inv-state , 16 c, 04 c, 1E c, 08 c,
+    0A c, 3D c, 20 c, 03 c, 02 c, 36 c, 20 c, 3D c,
+    20 c, 1A c, 3A c, invaders-left 1+ , FE c, 02 c, 28 c,
+    11 c, 3E c, 0E c, 82 c, 82 c, D5 c, ED c, 5B c,
+    inv-anim-state , 83 c, D1 c, 77 c, CD c, update-inv-stats ,
+    18 c, 02 c, 36 c, 20 c, 03 c, 23 c, 23 c, 1D c,
+    20 c, D6 c, C5 c, 01 c, 30 c, 00 c, 09 c, C1 c,
+    15 c, 20 c, CB c, 3A c, invaders-left 1+ , 3D c, 32 c,
+    invaders-left 1+ , 20 c, A1 c, 2A c, leftmost-inv , 3E c,
+    08 c, 95 c, 32 c, leftmost-inv , 2A c, rightmost-inv ,
+    3E c, 08 c, 95 c, 32 c, rightmost-inv , 2A c, bottommost-inv ,
+    3E c, 04 c, 95 c, 32 c, bottommost-inv , FD c,
+    E9 c,
+
+create disp-missile
+    3A c, missile-x , CB c, 3F c, CB c, 3F c, CB c,
+    3F c, 47 c, 3A c, missile-y , 4F c, CD c, xyadd ,
+    3A c, missile-y , A7 c, 28 c, 6B c, 7E c,
+    FE c, A0 c, 20 c, 09 c, 36 c, 20 c, 3E c, 00 c,
+    32 c, missile-y , 18 c, 5D c, 3A c, inv-x ,
+    47 c, 3A c, missile-x , CB c, 3F c, CB c, 3F c,
+    CB c, 3F c, 90 c, CB c, 78 c, 20 c, 02 c, 38 c,
+    41 c, CB c, 47 c, 20 c, 3D c, FE c, 0F c, 30 c,
+    39 c, 47 c, 3A c, inv-y , 4F c, 3A c, missile-y ,
+    91 c, 38 c, 2E c, CB c, 47 c, 20 c, 2A c,
+    FE c, 07 c, 30 c, 26 c, E5 c, 21 c, inv-state ,
+    CB c, 27 c, CB c, 27 c, CB c, 38 c, 80 c, 4F c,
+    06 c, 00 c, 09 c, 7E c, FE c, 02 c, 28 c, 03 c,
+    E1 c, 18 c, 0F c, 3E c, 01 c, 77 c, E1 c, 36 c,
+    2A c, 3E c, 00 c, 32 c, missile-y , 3E c, 01 c,
+    18 c, 08 c, 3A c, missile-x , E6 c, 07 c, C6 c,
+    18 c, 77 c, 01 c, 20 c, 00 c, 09 c, 7E c, D6 c,
+    18 c, 38 c, 06 c, D6 c, 08 c, 30 c, 02 c, 36 c,
+    20 c, FD c, E9 c,
+
+decimal
+
+: .S
+    15419 @ HERE 12 +
+    ( top, bottom)
+    OVER OVER -
+    IF ( if stack not empty)
+    DO
+    I @ . 2
+    +LOOP
+    ELSE
+    DROP DROP
+    THEN
+;
+
+: disp-barricades
+21 17 do
+    4 0 do
+        j i 3 + at [ 128 32 + ] literal emit
+        j i 10 + at [ 128 32 + ] literal emit
+        j i 18 + at [ 128 32 + ] literal emit
+        j i 25 + at [ 128 32 + ] literal emit
+    loop
+loop
+;
+
+
+: game-loop
+    0
+    begin
+        disp-ship call
+        dup
+        inv-period @ mod 0= if disp-invaders call then
+        disp-missile call
+        ( print bombs)
+        
+        ( keep going if we have lives left and no landing)
+        life @ 0>
+        inv-y @ bottommost-inv @ 2 * + ship-y <
+        invaders-left @ 0= or
+        and
+    while
+        1+
+        move-missile
+        move-ship
+        dup
+        inv-period @ mod 0= if move-invaders then
+    repeat
+    drop
+;
+
+: play
+    3 life !
+    124 ship-x !
+    init-inv-start-y inv-start-y !
+    init-invaders
+    create-udgs
+    invis cls
+    disp-barricades
+    game-loop
+    12 12 at ." GAME OVER" cr
+    vis
+;
