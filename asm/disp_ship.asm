@@ -1,14 +1,11 @@
 ; display player ship
-; substitute these with forth variables
-ship_x: equ 0x0DED
-old_ship_x: equ 0x0EED
 
-player_gr: equ 0
-erase_gr: equ 32
-display_start: equ 9216 + (22 * 32)
+include 'data.inc'
+
+ship_display_start: equ display_start + (22 * 32)
 
 ld b, 0
-ld hl, display_start
+ld hl, ship_display_start
 ld a, (ship_x)
 ld c, a
 
@@ -20,7 +17,7 @@ and 7
 ld d, a
 sla d
 
-ld hl, display_start
+ld hl, ship_display_start
 add hl, bc
 
 ld a, (old_ship_x)

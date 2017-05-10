@@ -1,17 +1,6 @@
 ; display missile + detect collisions
 
-xyadd: equ 0x00ED
-
-inv_x: equ 0x01ED
-inv_y: equ 0x02ED
-inv_state: equ 0x05ED
-missile_x: equ 0x0FED
-missile_y: equ 0x10ED
-
-erase_gr: equ 32
-barricade_gr: equ erase_gr + 128    ; reverse video space
-explode_gr: equ 42
-missile_gr: equ 24
+include 'data.inc'
 
 ; load hl with screen address of missile
 ld a, (missile_x)
@@ -43,40 +32,46 @@ nobarricade:
 
 ; check for invader collision
 ld a, (inv_x)
-ld b, a
+ld c, a
 ld a, (missile_x)
 srl a
 srl a
 srl a
-sub b
-bit 7, b ; inv_x is allowed to be negative, in which case, ignore carry flag
+sub c
+bit 7, c ; inv_x is allowed to be negative, in which case, ignore carry flag
 jr nz, ignorecarry
 jr c, noinvader
 ignorecarry:
 bit 0, a
 jr nz, noinvader  ; invaders will be at an even offset
-cp 15
+cp inv_cols * 2 - 1
 jr nc, noinvader
 ; ok, missile x is in range for an invader, what about y?
-ld b, a
-ld a, (inv_y)
 ld c, a
+ld a, (inv_y)
+ld b, a
 ld a, (missile_y)
-sub c
+sub b
 jr c, noinvader
 bit 0, a
 jr nz, noinvader
-cp 7
+cp inv_rows * 2 - 1
 jr nc, noinvader
 ; missile y is in range for an invader, is there actually a live one there?
 push hl
 ld hl, inv_state
-sla a
-sla a
+
+ld b, a
 srl b
-add b
-ld c, a
+srl c
+ld a, c
+
+rowloop:
+add a, inv_cols
+djnz rowloop
+
 ld b, 0
+ld c, a
 add hl, bc
 ld a, (hl)
 cp 2
@@ -92,7 +87,6 @@ pop hl
 ld (hl), explode_gr  ; visible death on screen
 ld a, 0
 ld (missile_y), a    ; end of this missile's journey
-ld a, 1
 jr blankold
 
 noinvader:
