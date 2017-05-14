@@ -19,10 +19,14 @@ const char * forth_var[] = {
     "ship-x",
     "old-ship-x",
     "missile-x",
-    "missile-y"
+    "missile-y",
+    "bombs",
+    "last-dropper",
+    "bomb-rel-idx",
+    "inv-rows 1- inv-cols * inv-state +"
 };
 
-#define maxfv ((sizeof (forth_var) / sizeof (const char *)) + 1)
+#define maxfv (sizeof (forth_var) / sizeof (const char *))
 
 int main()
 {
@@ -36,7 +40,7 @@ int main()
         if (c == 237) {   // ED
             c2 = getc(stdin);
             if (c2 != EOF) {
-                if (c2 <= maxfv)
+                if (c2 < maxfv)
                     printf(" %s ,", forth_var[c2]);
                 else
                    printf(" %02X c, %02X c,", c, c2);

@@ -17,14 +17,19 @@ ship_x:             equ 0x0DED
 old_ship_x:         equ 0x0EED
 missile_x:          equ 0x0FED
 missile_y:          equ 0x10ED
+bombs:              equ 0x11ED
+last_dropper:       equ 0x12ED
+bomb_rel_idx:       equ 0x13ED
 
 ; constants
 inv_rows:       equ 4
 inv_cols:       equ 10
+ship_y:         equ 22
+max_bombs:      equ 5
 display_start:  equ 9216
 invader_gr:     equ 16
 erase_gr:       equ 32
 barricade_gr:   equ erase_gr + 128    ; reverse video space
 explode_gr:     equ 42
 missile_gr:     equ 24
-
+bomb_gr:        equ 27

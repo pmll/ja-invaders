@@ -330,7 +330,14 @@ decimal
 1 constant invader-dying
 0 constant invader-dead
 
+0 variable bomb-rel-idx
+0 variable last-dropper
+1 constant bomb-period
+5 constant max-bombs
+
 create inv-state 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
+
+create bombs 260 , 270 , 280 , 285 , 265 ,
 
 : copy-bytes ( from address, to address, length --)
     0 do
@@ -492,6 +499,31 @@ create disp-missile
     D6 c, 18 c, 38 c, 06 c, D6 c, 08 c, 30 c, 02 c,
     36 c, 20 c, FD c, E9 c,
 
+create disp-bombs
+    21 c, bombs , 16 c, 05 c, 7E c, 47 c, 23 c,
+    7E c, FE c, 18 c, 28 c, 2B c, 4F c, 5F c, E5 c,
+    CD c, xyadd , 7B c, FE c, 17 c, 28 c, 12 c,
+    7E c, FE c, A0 c, 20 c, 0B c, 3E c, 20 c, 36 c,
+    20 c, E3 c, 3E c, 18 c, 77 c, E3 c, 18 c, 02 c,
+    36 c, 1B c, 01 c, 20 c, 00 c, A7 c, ED c, 42 c,
+    7E c, FE c, 1B c, 20 c, 02 c, 36 c, 20 c, E1 c,
+    23 c, 15 c, 20 c, C9 c, FD c, E9 c,
+
+create bombs-away
+    21 c, bombs , 06 c, 05 c, 23 c, 7E c, FE c,
+    18 c, 28 c, 06 c, 23 c, 23 c, 10 c, F7 c, 18 c,
+    54 c, E5 c, 06 c, 0A c, 3A c, last-dropper , 3C c,
+    FE c, 0A c, 38 c, 02 c, D6 c, 0A c, 21 c, inv-rows 1- inv-cols * inv-state + ,
+    16 c, 00 c, 5F c, 19 c, 0E c, 04 c, 56 c,
+    15 c, 15 c, 20 c, 14 c, E5 c, 57 c, 3A c, bomb-rel-idx ,
+    3C c, 32 c, bomb-rel-idx , 26 c, 00 c, 6F c,
+    CB c, 46 c, E1 c, 28 c, 12 c, 7A c, 18 c, 0A c,
+    16 c, 00 c, 1E c, 0A c, A7 c, ED c, 52 c, 0D c,
+    20 c, DD c, 10 c, CB c, E1 c, 18 c, 16 c, 7A c,
+    32 c, last-dropper , E1 c, 0D c, CB c, 21 c, 0C c,
+    3A c, inv-y , 81 c, 77 c, 2B c, CB c, 22 c,
+    3A c, inv-x , 82 c, 77 c, FD c, E9 c,
+
 decimal
 
 : .S
@@ -518,6 +550,54 @@ decimal
 loop
 ;
 
+: init-bombs
+    15403 c@ bomb-rel-idx c!
+    0 last-dropper !
+    max-bombs 0 do
+        [ ship-y 2 + 256 * ] literal bombs i 2 * + !   
+    loop
+;
+
+: old-bombs-away
+    ( find a bomb ready for release)
+    max-bombs 0 do
+        bombs i + i + 1+ c@ [ ship-y 2 + ] literal = if
+            ( we have a bomb available, let's find an invader to release it, maybe)
+            inv-state bottommost-inv @ inv-cols * +
+            last-dropper @ 1+ dup inv-cols + swap do
+                i dup inv-cols < 0= if inv-cols - then
+                over over + c@ invader-alive = if
+                    bomb-rel-idx @ dup 1+ bomb-rel-idx ! 255 and c@ 1 and 0= if
+                        dup last-dropper !
+                        j j + bombs + dup
+                        rot dup + inv-x @ + swap c!
+                        inv-y @ bottommost-inv @ 2 * + 1+ swap 1+ c!
+                        leave
+                    else
+                        drop
+                    then
+                else
+                    drop
+                then
+            loop
+            drop
+            leave
+        then
+    loop
+;
+
+: move-bombs
+    bombs 1+
+    max-bombs 0 do
+        dup c@ dup [ ship-y 2 + ] literal < if
+            1+ over c!    
+        else
+            drop
+        then
+        2 + 
+    loop
+    drop
+; 
 
 : game-loop
     0
@@ -526,7 +606,7 @@ loop
         dup
         inv-period @ mod 0= if disp-invaders call then
         disp-missile call
-        ( print bombs)
+        disp-bombs call
         
         update-inv-stats call
         ( keep going if we have lives left and no landing)
@@ -538,8 +618,10 @@ loop
         1+
         move-missile
         move-ship
+        move-bombs
         dup
-        inv-period @ mod 0= if move-invaders then
+        inv-period @ mod dup 0= if move-invaders then
+        1 = if bombs-away call then
     repeat
     drop
 ;
@@ -548,6 +630,7 @@ loop
     3 life !
     124 ship-x !
     init-inv-start-y inv-start-y !
+    init-bombs
     init-invaders
     create-udgs
     invis cls
