@@ -312,7 +312,6 @@ decimal
 
 10 constant inv-cols
 4 constant inv-rows
-10 constant init-inv-period
 2 constant init-inv-start-y
 0 variable inv-period
 2 variable inv-start-y
@@ -332,34 +331,16 @@ decimal
 
 0 variable bomb-rel-idx
 0 variable last-dropper
-1 constant bomb-period
+3 constant bomb-period
+7 constant bomb-rel-period
 5 constant max-bombs
 
 create inv-state 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
 
 create bombs 260 , 270 , 280 , 285 , 265 ,
 
-: copy-bytes ( from address, to address, length --)
-    0 do
-        over i + @
-        over i + !
-    2 +loop
-    drop drop
-;
-
-: copy-to-udg ( copy from address, first char num, number of chars)
-    swap 8 * 11264 +
-    swap 8 *
-    copy-bytes
-;
-
-: create-udgs ( user defined graphics for the game)
-    player-graphics player-gr 16 copy-to-udg
-    missile-graphics missile-gr 8 copy-to-udg
-    invader-graphics invader-gr 8 copy-to-udg 
-;
-
 16 base c!
+
 create disp-ship
     06 c, 00 c, 21 c, C0 c, 26 c, 3A c, ship-x ,
     4F c, CB c, 39 c, CB c, 39 c, CB c, 39 c, E6 c,
@@ -368,84 +349,6 @@ create disp-ship
     3F c, B9 c, 28 c, 0E c, 38 c, 08 c, 23 c, 23 c,
     36 c, 20 c, 2B c, 2B c, 18 c, 04 c, 2B c, 36 c,
     20 c, 23 c, 72 c, 23 c, 14 c, 72 c, FD c, E9 c,
-
-decimal
-
-: move-ship ( process keyboard input and update player)
-    ship-x @ old-ship-x !
-    65278 in 4 and 0= if    ( left key pressed)
-        ship-x @ dup 0> if
-            1- ship-x !
-        else
-            drop
-        then
-    then
-    65278 in 8 and 0= if    ( right key pressed)
-        ship-x @ dup 247 < if
-            1+ ship-x !
-        else
-            drop
-        then
-    then
-;
-
-: move-missile
-    missile-y @
-    dup 0> if
-        ( move the missile up the screen)
-        1- missile-y !
-    else
-        drop
-        32766 in 1 and 0= if    ( fire key pressed)
-            [ ship-y 1- ] literal missile-y !
-            ship-x @ 4 + missile-x !
-        then
-    then
-;
-
-: move-down
-    inv-y @ 1+ inv-y !
-    inv-dir @ -1 * inv-dir !
-;
-
-: move-invaders
-    inv-x @ old-inv-x !
-    inv-y @ old-inv-y !
-    inv-dir @
-    1 =
-    if
-        ( moving right...)
-        inv-x @ rightmost-inv @ 2 * + 31 =
-        if
-            move-down
-        else
-            inv-x @ 1+ inv-x !
-        then
-    else
-        ( moving left...)
-        inv-x @ leftmost-inv @ 2 * + 0=
-        if
-            move-down
-        else
-            inv-x @ 1- inv-x !
-        then
-    then
-;
-
-: init-invaders
-    init-inv-period inv-period !
-    inv-start-y @ dup inv-y ! old-inv-y !
-    0 inv-x ! 0 old-inv-x !
-    1 inv-dir !
-    inv-state
-    inv-cols inv-rows * 0 do
-        dup invader-alive swap c!
-        1+
-    loop
-    drop
-;
-
-16 base c!
 
 create xyadd
     21 c, 00 c, 24 c, 78 c, 06 c, 00 c, CB c, 21 c,
@@ -457,12 +360,13 @@ create update-inv-stats
     3E c, 00 c, 32 c, invaders-left , 67 c, 2E c, 0A c,
     3E c, 04 c, 32 c, bottommost-inv , 01 c, inv-state ,
     16 c, 04 c, 1E c, 0A c, 0A c, FE c, 02 c, 20 c,
-    11 c, 7A c, 32 c, bottommost-inv , 7C c, BB c, 30 c,
-    01 c, 63 c, 7D c, BB c, 38 c, 01 c, 6B c, 32 c,
-    invaders-left , 03 c, 1D c, 20 c, E6 c, 15 c, 20 c,
-    E1 c, 3E c, 0A c, 94 c, 32 c, leftmost-inv , 3E c,
-    0A c, 95 c, 32 c, rightmost-inv , 2A c, bottommost-inv ,
-    3E c, 04 c, 95 c, 32 c, bottommost-inv , FD c, E9 c,
+    15 c, 7A c, 32 c, bottommost-inv , 7C c, BB c, 30 c,
+    01 c, 63 c, 7D c, BB c, 38 c, 01 c, 6B c, 3A c,
+    invaders-left , 3C c, 32 c, invaders-left , 03 c, 1D c,
+    20 c, E2 c, 15 c, 20 c, DD c, 3E c, 0A c, 94 c,
+    32 c, leftmost-inv , 3E c, 0A c, 95 c, 32 c, rightmost-inv ,
+    2A c, bottommost-inv , 3E c, 04 c, 95 c, 32 c,
+    bottommost-inv , FD c, E9 c,
 
 create disp-invaders
     3A c, inv-anim-state , EE c, 01 c, 32 c, inv-anim-state ,
@@ -501,13 +405,14 @@ create disp-missile
 
 create disp-bombs
     21 c, bombs , 16 c, 05 c, 7E c, 47 c, 23 c,
-    7E c, FE c, 18 c, 28 c, 2B c, 4F c, 5F c, E5 c,
-    CD c, xyadd , 7B c, FE c, 17 c, 28 c, 12 c,
+    7E c, FE c, 18 c, 28 c, 2F c, 4F c, 5F c, E5 c,
+    CD c, xyadd , 7B c, FE c, 17 c, 28 c, 16 c,
     7E c, FE c, A0 c, 20 c, 0B c, 3E c, 20 c, 36 c,
-    20 c, E3 c, 3E c, 18 c, 77 c, E3 c, 18 c, 02 c,
-    36 c, 1B c, 01 c, 20 c, 00 c, A7 c, ED c, 42 c,
-    7E c, FE c, 1B c, 20 c, 02 c, 36 c, 20 c, E1 c,
-    23 c, 15 c, 20 c, C9 c, FD c, E9 c,
+    20 c, E3 c, 3E c, 18 c, 77 c, E3 c, 18 c, 06 c,
+    FE c, 20 c, 20 c, 02 c, 36 c, 1B c, 01 c, 20 c,
+    00 c, A7 c, ED c, 42 c, 7E c, FE c, 1B c, 20 c,
+    02 c, 36 c, 20 c, E1 c, 23 c, 15 c, 20 c, C5 c,
+    FD c, E9 c,
 
 create bombs-away
     21 c, bombs , 06 c, 05 c, 23 c, 7E c, FE c,
@@ -526,17 +431,90 @@ create bombs-away
 
 decimal
 
-: .S
-    15419 @ HERE 12 +
-    ( top, bottom)
-    OVER OVER -
-    IF ( if stack not empty)
-    DO
-    I @ . 2
-    +LOOP
-    ELSE
-    DROP DROP
-    THEN
+: copy-bytes ( from address, to address, length --)
+    0 do
+        over i + @
+        over i + !
+    2 +loop
+    drop drop
+;
+
+: copy-to-udg ( copy from address, first char num, number of chars)
+    swap 8 * 11264 +
+    swap 8 *
+    copy-bytes
+;
+
+: create-udgs ( user defined graphics for the game)
+    player-graphics player-gr 16 copy-to-udg
+    missile-graphics missile-gr 8 copy-to-udg
+    invader-graphics invader-gr 8 copy-to-udg 
+;
+
+: move-ship ( process keyboard input and update player)
+    ship-x @ old-ship-x !
+    65278 in 4 and 0= if    ( left key pressed)
+        ship-x @ dup 0> if
+            1- ship-x !
+        else
+            drop
+        then
+    then
+    65278 in 8 and 0= if    ( right key pressed)
+        ship-x @ dup 247 < if
+            1+ ship-x !
+        else
+            drop
+        then
+    then
+;
+
+: move-missile
+    missile-y @
+    dup 0> if
+        ( move the missile up the screen)
+        1- missile-y !
+    else
+        drop
+        32766 in 1 and 0= if    ( fire key pressed)
+            [ ship-y 1- ] literal missile-y !
+            ship-x @ 4 + missile-x !
+        then
+    then
+;
+
+: move-down
+    inv-y @ 1+ inv-y !
+    inv-dir @ -1 * inv-dir !
+;
+
+: set-inv-period
+    ( invaders-left @ 4 / 2+ inv-period ! )
+    20 inv-period !  ( temp setting to make testing easier )
+;
+
+: move-invaders
+    inv-x @ old-inv-x !
+    inv-y @ old-inv-y !
+    inv-dir @
+    1 =
+    if
+        ( moving right...)
+        inv-x @ rightmost-inv @ 2 * + 31 =
+        if
+            move-down
+        else
+            inv-x @ 1+ inv-x !
+        then
+    else
+        ( moving left...)
+        inv-x @ leftmost-inv @ 2 * + 0=
+        if
+            move-down
+        else
+            inv-x @ 1- inv-x !
+        then
+    then
 ;
 
 : disp-barricades
@@ -550,39 +528,41 @@ decimal
 loop
 ;
 
+: init-invaders
+    inv-start-y @ dup inv-y ! old-inv-y !
+    0 inv-x ! 0 old-inv-x !
+    1 inv-dir !
+    inv-state
+    inv-cols inv-rows * 0 do
+        dup invader-alive swap c!
+        1+
+    loop
+    drop
+    disp-invaders call
+    inv-y @ inv-rows + inv-rows + 17 < if
+        disp-barricades
+    then
+    inv-rows inv-cols * invaders-left !
+;
+
+: .S
+    15419 @ HERE 12 +
+    ( top, bottom)
+    OVER OVER -
+    IF ( if stack not empty)
+    DO
+    I @ . 2
+    +LOOP
+    ELSE
+    DROP DROP
+    THEN
+;
+
 : init-bombs
     15403 c@ bomb-rel-idx c!
     0 last-dropper !
     max-bombs 0 do
         [ ship-y 2 + 256 * ] literal bombs i 2 * + !   
-    loop
-;
-
-: old-bombs-away
-    ( find a bomb ready for release)
-    max-bombs 0 do
-        bombs i + i + 1+ c@ [ ship-y 2 + ] literal = if
-            ( we have a bomb available, let's find an invader to release it, maybe)
-            inv-state bottommost-inv @ inv-cols * +
-            last-dropper @ 1+ dup inv-cols + swap do
-                i dup inv-cols < 0= if inv-cols - then
-                over over + c@ invader-alive = if
-                    bomb-rel-idx @ dup 1+ bomb-rel-idx ! 255 and c@ 1 and 0= if
-                        dup last-dropper !
-                        j j + bombs + dup
-                        rot dup + inv-x @ + swap c!
-                        inv-y @ bottommost-inv @ 2 * + 1+ swap 1+ c!
-                        leave
-                    else
-                        drop
-                    then
-                else
-                    drop
-                then
-            loop
-            drop
-            leave
-        then
     loop
 ;
 
@@ -594,14 +574,30 @@ loop
         else
             drop
         then
-        2 + 
+        2+ 
     loop
     drop
 ; 
 
+: no-bombs-in-flight?
+    1
+    max-bombs 0 do
+        bombs 1+ i + i + c@ [ ship-y 2 + ] literal < if
+            drop 0
+            leave
+        then
+    loop
+;
+
 : game-loop
     0
     begin
+        invaders-left @ 0= if
+            no-bombs-in-flight? if
+                inv-start-y @ 1+ inv-start-y !
+                init-invaders
+            then
+        then
         disp-ship call
         dup
         inv-period @ mod 0= if disp-invaders call then
@@ -609,6 +605,7 @@ loop
         disp-bombs call
         
         update-inv-stats call
+        set-inv-period
         ( keep going if we have lives left and no landing)
         life @ 0>
         inv-y @ bottommost-inv @ 2 * + ship-y <
@@ -618,10 +615,10 @@ loop
         1+
         move-missile
         move-ship
-        move-bombs
         dup
-        inv-period @ mod dup 0= if move-invaders then
-        1 = if bombs-away call then
+        inv-period @ mod 0= if move-invaders then
+        dup bomb-period and 0= if move-bombs then
+        dup bomb-rel-period and 0= if bombs-away call then
     repeat
     drop
 ;
@@ -631,10 +628,9 @@ loop
     124 ship-x !
     init-inv-start-y inv-start-y !
     init-bombs
-    init-invaders
     create-udgs
     invis cls
-    disp-barricades
+    init-invaders
     game-loop
     12 12 at ." GAME OVER" cr
     vis

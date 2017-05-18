@@ -36,6 +36,11 @@ ex (sp), hl
 jr nobomb
 
 nobarricade:
+; invaders sometimes descend after releasing a bomb
+; if this happens, don't overwrite the invader
+cp erase_gr
+jr nz, nobomb
+
 ld (hl), bomb_gr
 
 nobomb:

@@ -39,6 +39,8 @@ ld l, e
 
 not_more_right:
 
+ld a, (invaders_left)
+inc a
 ld (invaders_left), a
 
 notalive:
