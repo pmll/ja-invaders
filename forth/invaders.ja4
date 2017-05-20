@@ -1,4 +1,4 @@
-: file-comment ( setup user defined graphics and save to tape) ;
+: file-comment ( Jupiter Ace Invaders) ;
 
 2 base c!
 
@@ -305,6 +305,7 @@ decimal
 0 variable old-ship-x
 22 constant ship-y
 0 variable life
+0 variable ship-hit
 
 1 constant missile-period
 0 variable missile-x
@@ -429,6 +430,9 @@ create bombs-away
     3A c, inv-y , 81 c, 77 c, 2B c, CB c, 22 c,
     3A c, inv-x , 82 c, 77 c, FD c, E9 c,
 
+create pause
+    DF c, 76 c, 1D c, 20 c, FC c, FD c, E9 c,
+
 decimal
 
 : copy-bytes ( from address, to address, length --)
@@ -449,6 +453,14 @@ decimal
     player-graphics player-gr 16 copy-to-udg
     missile-graphics missile-gr 8 copy-to-udg
     invader-graphics invader-gr 8 copy-to-udg 
+;
+
+: between? ( a,b,c -- is a between b and c inclusive? )
+    3 pick < if
+        drop drop 0
+    else
+        < 0=
+    then
 ;
 
 : move-ship ( process keyboard input and update player)
@@ -570,7 +582,16 @@ loop
     bombs 1+
     max-bombs 0 do
         dup c@ dup [ ship-y 2 + ] literal < if
-            1+ over c!    
+            1+
+            ( have we hit the player? )
+            dup ship-y = if
+                over 1- c@ 8 * 3 +
+                ship-x @ dup 8 + between? if
+                    1 ship-hit !
+                then
+            then
+
+            over c!    
         else
             drop
         then
@@ -589,6 +610,33 @@ loop
     loop
 ;
 
+: disp-lives
+    6 1 do
+        0 29 i - i - at
+        i life @ < if
+            player-gr emit player-gr 1+ emit
+        else
+            2 spaces
+        then
+    loop
+;
+
+: lose-life
+    ship-y ship-x @ 8 / at ." **"
+    life @ 1- life !
+    0 ship-hit !
+    disp-lives
+    ( give the player a sporting chance, let all bombs descend before new life)
+    begin
+        move-bombs
+        disp-bombs call
+        10 pause ( fixme: will figure out proper timing later)
+        no-bombs-in-flight?
+    until
+    100 pause
+;
+
+
 : game-loop
     0
     begin
@@ -606,6 +654,7 @@ loop
         
         update-inv-stats call
         set-inv-period
+        ship-hit @ if lose-life then
         ( keep going if we have lives left and no landing)
         life @ 0>
         inv-y @ bottommost-inv @ 2 * + ship-y <
@@ -624,13 +673,19 @@ loop
 ;
 
 : play
-    3 life !
     124 ship-x !
+    0 ship-hit !
+    0 missile-y !
     init-inv-start-y inv-start-y !
     init-bombs
     create-udgs
     invis cls
     init-invaders
+    4 life !
+    disp-lives
+    50 pause call
+    life @ 1- life !
+    disp-lives
     game-loop
     12 12 at ." GAME OVER" cr
     vis
