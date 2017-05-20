@@ -275,30 +275,12 @@ create invader-graphics
     00100100 c,
     01000010 c,
 
-    00111100 c,
-    01111110 c,
-    01011010 c,
-    01111110 c,
-    00111100 c,
-    00111100 c,
-    01111110 c,
-    01010101 c,
-
-    00111100 c,
-    01111110 c,
-    01011010 c,
-    01111110 c,
-    00111100 c,
-    00111100 c,
-    01111110 c,
-    10101010 c,
-
 decimal
 
-0 constant player-gr
+1 constant player-gr
 24 constant missile-gr
 27 constant bomb-gr
-16 constant invader-gr
+18 constant invader-gr
 
 1 constant ship-period
 0 variable ship-x
@@ -312,7 +294,7 @@ decimal
 0 variable missile-y
 
 10 constant inv-cols
-4 constant inv-rows
+5 constant inv-rows
 2 constant init-inv-start-y
 0 variable inv-period
 2 variable inv-start-y
@@ -349,7 +331,8 @@ create disp-ship
     3A c, old-ship-x , CB c, 3F c, CB c, 3F c, CB c,
     3F c, B9 c, 28 c, 0E c, 38 c, 08 c, 23 c, 23 c,
     36 c, 20 c, 2B c, 2B c, 18 c, 04 c, 2B c, 36 c,
-    20 c, 23 c, 72 c, 23 c, 14 c, 72 c, FD c, E9 c,
+    20 c, 23 c, 14 c, 72 c, 23 c, 14 c, 72 c, FD c,
+    E9 c,
 
 create xyadd
     21 c, 00 c, 24 c, 78 c, 06 c, 00 c, CB c, 21 c,
@@ -359,14 +342,14 @@ create xyadd
 
 create update-inv-stats
     3E c, 00 c, 32 c, invaders-left , 67 c, 2E c, 0A c,
-    3E c, 04 c, 32 c, bottommost-inv , 01 c, inv-state ,
-    16 c, 04 c, 1E c, 0A c, 0A c, FE c, 02 c, 20 c,
+    3E c, 05 c, 32 c, bottommost-inv , 01 c, inv-state ,
+    16 c, 05 c, 1E c, 0A c, 0A c, FE c, 02 c, 20 c,
     15 c, 7A c, 32 c, bottommost-inv , 7C c, BB c, 30 c,
     01 c, 63 c, 7D c, BB c, 38 c, 01 c, 6B c, 3A c,
     invaders-left , 3C c, 32 c, invaders-left , 03 c, 1D c,
     20 c, E2 c, 15 c, 20 c, DD c, 3E c, 0A c, 94 c,
     32 c, leftmost-inv , 3E c, 0A c, 95 c, 32 c, rightmost-inv ,
-    2A c, bottommost-inv , 3E c, 04 c, 95 c, 32 c,
+    2A c, bottommost-inv , 3E c, 05 c, 95 c, 32 c,
     bottommost-inv , FD c, E9 c,
 
 create disp-invaders
@@ -374,14 +357,15 @@ create disp-invaders
     3A c, inv-x , 47 c, 3A c, inv-y , 4F c,
     CD c, xyadd , E5 c, 3A c, old-inv-x , 47 c,
     3A c, old-inv-y , 4F c, CD c, xyadd , 01 c,
-    inv-state , 16 c, 04 c, 1E c, 0A c, 0A c, A7 c,
-    28 c, 16 c, 36 c, 20 c, 3D c, 20 c, 03 c, 02 c,
-    18 c, 0E c, E3 c, 3E c, 0E c, 82 c, 82 c, D5 c,
-    ED c, 5B c, inv-anim-state , 83 c, D1 c, 77 c, E3 c,
-    03 c, 23 c, 23 c, E3 c, 23 c, 23 c, E3 c, 1D c,
-    20 c, DC c, 3E c, 2C c, 85 c, 6F c, 30 c, 01 c,
-    24 c, E3 c, 3E c, 2C c, 85 c, 6F c, 30 c, 01 c,
-    24 c, E3 c, 15 c, 20 c, C7 c, E1 c, FD c, E9 c,
+    inv-state , 16 c, 05 c, 1E c, 0A c, 0A c, A7 c,
+    28 c, 18 c, 36 c, 20 c, 3D c, 20 c, 03 c, 02 c,
+    18 c, 10 c, E3 c, 7A c, 3D c, E6 c, FE c, C6 c,
+    12 c, D5 c, ED c, 5B c, inv-anim-state , 83 c, D1 c,
+    77 c, E3 c, 03 c, 23 c, 23 c, E3 c, 23 c, 23 c,
+    E3 c, 1D c, 20 c, DA c, 3E c, 2C c, 85 c, 6F c,
+    30 c, 01 c, 24 c, E3 c, 3E c, 2C c, 85 c, 6F c,
+    30 c, 01 c, 24 c, E3 c, 15 c, 20 c, C5 c, E1 c,
+    FD c, E9 c,
 
 create disp-missile
     3A c, missile-x , CB c, 3F c, CB c, 3F c, CB c,
@@ -394,7 +378,7 @@ create disp-missile
     42 c, CB c, 47 c, 20 c, 3E c, FE c, 13 c, 30 c,
     3A c, 4F c, 3A c, inv-y , 47 c, 3A c, missile-y ,
     90 c, 38 c, 2F c, CB c, 47 c, 20 c, 2B c,
-    FE c, 07 c, 30 c, 27 c, E5 c, 21 c, inv-state ,
+    FE c, 09 c, 30 c, 27 c, E5 c, 21 c, inv-state ,
     47 c, CB c, 38 c, CB c, 39 c, 79 c, C6 c, 0A c,
     10 c, FC c, 06 c, 00 c, 4F c, 09 c, 7E c, FE c,
     02 c, 28 c, 03 c, E1 c, 18 c, 0D c, 3E c, 01 c,
@@ -420,7 +404,7 @@ create bombs-away
     18 c, 28 c, 06 c, 23 c, 23 c, 10 c, F7 c, 18 c,
     54 c, E5 c, 06 c, 0A c, 3A c, last-dropper , 3C c,
     FE c, 0A c, 38 c, 02 c, D6 c, 0A c, 21 c, inv-rows 1- inv-cols * inv-state + ,
-    16 c, 00 c, 5F c, 19 c, 0E c, 04 c, 56 c,
+    16 c, 00 c, 5F c, 19 c, 0E c, 05 c, 56 c,
     15 c, 15 c, 20 c, 14 c, E5 c, 57 c, 3A c, bomb-rel-idx ,
     3C c, 32 c, bomb-rel-idx , 26 c, 00 c, 6F c,
     CB c, 46 c, E1 c, 28 c, 12 c, 7A c, 18 c, 0A c,
@@ -452,7 +436,7 @@ decimal
 : create-udgs ( user defined graphics for the game)
     player-graphics player-gr 16 copy-to-udg
     missile-graphics missile-gr 8 copy-to-udg
-    invader-graphics invader-gr 8 copy-to-udg 
+    invader-graphics invader-gr 6 copy-to-udg 
 ;
 
 : between? ( a,b,c -- is a between b and c inclusive? )
@@ -612,7 +596,7 @@ loop
 
 : disp-lives
     6 1 do
-        0 29 i - i - at
+        0 32 i - i - at
         i life @ < if
             player-gr emit player-gr 1+ emit
         else
@@ -633,7 +617,7 @@ loop
         no-bombs-in-flight?
     until
     0 ship-hit !
-    100 pause call
+    10 pause call
 ;
 
 
@@ -680,6 +664,7 @@ loop
     init-bombs
     create-udgs
     invis cls
+    0 0 at ." SCORE 00000000"
     init-invaders
     4 life !
     disp-lives

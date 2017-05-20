@@ -50,9 +50,12 @@ jr dead
 notdying:
 
 ex (sp), hl     ; new x,y
-ld a, invader_gr - 2 
-add a, d
-add a, d
+
+ld a, d
+dec a
+and 254
+add invader_gr
+
 push de
 ld de, (inv_anim_state)
 add a, e

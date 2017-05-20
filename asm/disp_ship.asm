@@ -43,6 +43,7 @@ ld (hl), erase_gr
 inc hl
 
 ship:
+inc d
 ld (hl), d
 inc hl
 inc d
