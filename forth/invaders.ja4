@@ -624,16 +624,16 @@ loop
 : lose-life
     ship-y ship-x @ 8 / at ." **"
     life @ 1- life !
-    0 ship-hit !
     disp-lives
     ( give the player a sporting chance, let all bombs descend before new life)
     begin
         move-bombs
         disp-bombs call
-        10 pause ( fixme: will figure out proper timing later)
+        10 pause call ( fixme: will figure out proper timing later)
         no-bombs-in-flight?
     until
-    100 pause
+    0 ship-hit !
+    100 pause call
 ;
 
 
