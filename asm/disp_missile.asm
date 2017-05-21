@@ -43,6 +43,9 @@ dec a
 call disp_mother_ch
 dec a
 call disp_mother_ch
+; update the score
+ld a, 10
+call upd_score
 pop hl
 ; flag mothership as dying
 ld a, mother_dying
@@ -50,8 +53,7 @@ ld (mother_state), a
 ; missile is at end of journey
 ld a, 0
 ld (missile_y), a    ; end of this missile's journey
-blankoldstep:
-jr blankold
+jr blankoldstep      ; out of range for direct relative jump
 
 nomother:
 
@@ -64,6 +66,7 @@ jr nz, nobarricade
 ld (hl), erase_gr
 ld a, 0
 ld (missile_y), a
+blankoldstep:
 jr blankold
 
 nobarricade:
@@ -118,9 +121,23 @@ pop hl
 jr noinvader
 
 hitinvader:
-; ok, we have hit, that's the end of this missile's journey
+; ok, we have hit an invader
 ld a, 1
 ld (hl), a  ; invader flagged as dying
+; update the score
+ld a, (inv_y)
+ld b, a
+ld a, (missile_y)
+sub b
+if inv_rows & 1
+; if we have an odd number of rows, the top row alone will have the top score
+add a, 2
+endif
+srl a
+srl a
+neg
+add a, 0 + (inv_rows + 1) / 2
+call upd_score
 pop hl
 ld (hl), explode_gr  ; visible death on screen
 ld a, 0
