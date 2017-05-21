@@ -281,6 +281,7 @@ decimal
 24 constant missile-gr
 27 constant bomb-gr
 18 constant invader-gr
+239 constant mother-gr
 
 1 constant ship-period
 0 variable ship-x
@@ -318,6 +319,17 @@ decimal
 7 constant bomb-rel-period
 5 constant max-bombs
 
+3 constant mother-period
+2 constant mother-in-flight
+1 constant mother-dying
+0 constant mother-waiting
+100 constant mother-cycle
+2 constant mother-y
+0 variable mother-x
+0 variable mother-countdown
+0 variable mother-state
+0 variable mother-dir
+
 create inv-state 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 ,
 
 create bombs 260 , 270 , 280 , 285 , 265 ,
@@ -339,6 +351,10 @@ create xyadd
     CB c, 21 c, CB c, 21 c, CB c, 21 c, CB c, 10 c,
     CB c, 21 c, CB c, 10 c, 09 c, 06 c, 00 c, 4F c,
     CB c, 79 c, 28 c, 02 c, 06 c, FF c, 09 c, C9 c,
+
+create disp-mother-ch
+    CB c, 7F c, C0 c, FE c, 20 c, D0 c, 5F c, 16 c,
+    00 c, 21 c, 40 c, 24 c, 19 c, 71 c, C9 c,
 
 create update-inv-stats
     3E c, 00 c, 32 c, invaders-left , 67 c, 2E c, 0A c,
@@ -370,23 +386,30 @@ create disp-invaders
 create disp-missile
     3A c, missile-x , CB c, 3F c, CB c, 3F c, CB c,
     3F c, 47 c, 3A c, missile-y , 4F c, CD c, xyadd ,
-    3A c, missile-y , A7 c, 28 c, 6C c, 7E c,
-    FE c, A0 c, 20 c, 09 c, 36 c, 20 c, 3E c, 00 c,
-    32 c, missile-y , 18 c, 5E c, 3A c, inv-x ,
-    4F c, 3A c, missile-x , CB c, 3F c, CB c, 3F c,
-    CB c, 3F c, 91 c, CB c, 79 c, 20 c, 02 c, 38 c,
-    42 c, CB c, 47 c, 20 c, 3E c, FE c, 13 c, 30 c,
-    3A c, 4F c, 3A c, inv-y , 47 c, 3A c, missile-y ,
-    90 c, 38 c, 2F c, CB c, 47 c, 20 c, 2B c,
-    FE c, 09 c, 30 c, 27 c, E5 c, 21 c, inv-state ,
-    47 c, CB c, 38 c, CB c, 39 c, 79 c, C6 c, 0A c,
-    10 c, FC c, 06 c, 00 c, 4F c, 09 c, 7E c, FE c,
-    02 c, 28 c, 03 c, E1 c, 18 c, 0D c, 3E c, 01 c,
-    77 c, E1 c, 36 c, 2A c, 3E c, 00 c, 32 c, missile-y ,
-    18 c, 08 c, 3A c, missile-x , E6 c, 07 c,
-    C6 c, 18 c, 77 c, 01 c, 20 c, 00 c, 09 c, 7E c,
-    D6 c, 18 c, 38 c, 06 c, D6 c, 08 c, 30 c, 02 c,
-    36 c, 20 c, FD c, E9 c,
+    3A c, missile-y , A7 c, 28 c, 3A c, FE c,
+    02 c, 20 c, 38 c, 3A c, mother-state , FE c, 02 c,
+    20 c, 31 c, 3A c, missile-x , CB c, 3F c, CB c,
+    3F c, CB c, 3F c, 47 c, 3A c, mother-x , 3D c,
+    B8 c, 30 c, 20 c, C6 c, 03 c, B8 c, 38 c, 1B c,
+    E5 c, 0E c, 2A c, CD c, disp-mother-ch , 3D c, CD c,
+    disp-mother-ch , 3D c, CD c, disp-mother-ch , E1 c, 3E c,
+    01 c, 32 c, mother-state , 3E c, 00 c, 32 c, missile-y ,
+    18 c, 6C c, 7E c, FE c, A0 c, 20 c, 09 c,
+    36 c, 20 c, 3E c, 00 c, 32 c, missile-y , 18 c,
+    5E c, 3A c, inv-x , 4F c, 3A c, missile-x ,
+    CB c, 3F c, CB c, 3F c, CB c, 3F c, 91 c, CB c,
+    79 c, 20 c, 02 c, 38 c, 42 c, CB c, 47 c, 20 c,
+    3E c, FE c, 13 c, 30 c, 3A c, 4F c, 3A c, inv-y ,
+    47 c, 3A c, missile-y , 90 c, 38 c, 2F c,
+    CB c, 47 c, 20 c, 2B c, FE c, 09 c, 30 c, 27 c,
+    E5 c, 21 c, inv-state , 47 c, CB c, 38 c, CB c,
+    39 c, 79 c, C6 c, 0A c, 10 c, FC c, 06 c, 00 c,
+    4F c, 09 c, 7E c, FE c, 02 c, 28 c, 03 c, E1 c,
+    18 c, 0D c, 3E c, 01 c, 77 c, E1 c, 36 c, 2A c,
+    3E c, 00 c, 32 c, missile-y , 18 c, 08 c, 3A c,
+    missile-x , E6 c, 07 c, C6 c, 18 c, 77 c, 01 c,
+    20 c, 00 c, 09 c, 7E c, D6 c, 18 c, 38 c, 06 c,
+    D6 c, 08 c, 30 c, 02 c, 36 c, 20 c, FD c, E9 c,
 
 create disp-bombs
     21 c, bombs , 16 c, 05 c, 7E c, 47 c, 23 c,
@@ -416,6 +439,18 @@ create bombs-away
 
 create pause
     DF c, 76 c, 1D c, 20 c, FC c, FD c, E9 c,
+
+create disp-mother
+    3A c, mother-state , FE c, 00 c, 28 c, 40 c, FE c,
+    01 c, 20 c, 14 c, 3A c, mother-x , 0E c, 20 c,
+    06 c, 03 c, CD c, disp-mother-ch , 3C c, 10 c, FA c,
+    3E c, 00 c, 32 c, mother-state , 18 c, 28 c, 3A c,
+    mother-dir , CB c, 7F c, 28 c, 11 c, 3A c, mother-x ,
+    0E c, EF c, CD c, disp-mother-ch , C6 c, 03 c,
+    0E c, 20 c, CD c, disp-mother-ch , 18 c, 10 c, 3A c,
+    mother-x , 3D c, 0E c, 20 c, CD c, disp-mother-ch ,
+    C6 c, 03 c, 0E c, EF c, CD c, disp-mother-ch , FD c,
+    E9 c,
 
 decimal
 
@@ -481,7 +516,7 @@ decimal
 
 : move-down
     inv-y @ 1+ inv-y !
-    inv-dir @ -1 * inv-dir !
+    inv-dir @ negate inv-dir !
 ;
 
 : set-inv-period
@@ -620,6 +655,31 @@ loop
     10 pause call
 ;
 
+: move-mother
+    mother-state @ dup mother-waiting = if
+        drop
+        mother-countdown @ 1- dup 0= if
+            drop
+            mother-cycle mother-countdown !
+            mother-in-flight mother-state !
+            mother-dir @ negate dup mother-dir !
+            0< if
+                31 mother-x !
+            else
+                -2 mother-x !
+            then
+        else
+            mother-countdown !
+        then
+    else
+        mother-in-flight = if
+            mother-x @ mother-dir @ + dup mother-x !
+            -3 32 between? 0= if
+                mother-waiting mother-state !
+            then
+        then
+    then
+;
 
 : game-loop
     0
@@ -633,6 +693,7 @@ loop
         disp-ship call
         dup
         inv-period @ mod 0= if disp-invaders call then
+        dup mother-period and 0= if disp-mother call then
         disp-missile call
         disp-bombs call
         
@@ -652,6 +713,7 @@ loop
         inv-period @ mod 0= if move-invaders then
         dup bomb-period and 0= if move-bombs then
         dup bomb-rel-period and 0= if bombs-away call then
+        dup mother-period and 0= if move-mother then
     repeat
     drop
 ;
@@ -661,6 +723,9 @@ loop
     0 ship-hit !
     0 missile-y !
     init-inv-start-y inv-start-y !
+    mother-cycle mother-countdown !
+    -1 mother-dir !
+    mother-waiting mother-state !
     init-bombs
     create-udgs
     invis cls

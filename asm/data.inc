@@ -20,17 +20,27 @@ missile_y:          equ 0x10ED
 bombs:              equ 0x11ED
 last_dropper:       equ 0x12ED
 bomb_rel_idx:       equ 0x13ED
+mother_x:           equ 0x15ED
+mother_state:       equ 0x16ED
+mother_dir:         equ 0x17ED
+disp_mother_ch:     equ 0x18ED
 
 ; constants
-inv_rows:       equ 5
-inv_cols:       equ 10
-ship_y:         equ 22
-max_bombs:      equ 5
-display_start:  equ 9216
-invader_gr:     equ 18
-erase_gr:       equ 32
-barricade_gr:   equ erase_gr + 128    ; reverse video space
-explode_gr:     equ 42
-missile_gr:     equ 24
-bomb_gr:        equ 27
-ship_gr:        equ 2
+inv_rows:         equ 5
+inv_cols:         equ 10
+ship_y:           equ 22
+mother_y:         equ 2
+mother_in_flight: equ 2
+mother_dying:     equ 1
+mother_waiting:   equ 0
+max_bombs:        equ 5
+display_start:    equ 9216
+invader_gr:       equ 18
+erase_gr:         equ 32
+barricade_gr:     equ erase_gr + 128    ; reverse video space
+explode_gr:       equ 42
+missile_gr:       equ 24
+bomb_gr:          equ 27
+ship_gr:          equ 2
+mother_gr:        equ 239     ; reverse video 'o'
+

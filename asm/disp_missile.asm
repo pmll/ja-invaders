@@ -15,7 +15,45 @@ call xyadd
 ; at end of flight?
 ld a, (missile_y)
 and a
-jr z, blankold
+jr z, blankoldstep      ; out of range for direct relative jump
+
+; check for mother ship collision
+cp mother_y
+jr nz, nomother
+ld a, (mother_state)
+cp mother_in_flight
+jr nz, nomother
+ld a, (missile_x)
+srl a
+srl a
+srl a
+ld b, a
+ld a, (mother_x)
+dec a
+cp b
+jr nc, nomother
+add a, 3
+cp b
+jr c, nomother
+; hit mothership, make it explode
+push hl
+ld c, explode_gr
+call disp_mother_ch
+dec a
+call disp_mother_ch
+dec a
+call disp_mother_ch
+pop hl
+; flag mothership as dying
+ld a, mother_dying
+ld (mother_state), a
+; missile is at end of journey
+ld a, 0
+ld (missile_y), a    ; end of this missile's journey
+blankoldstep:
+jr blankold
+
+nomother:
 
 ; check for collision with barricade
 ld a,(hl)
@@ -90,6 +128,7 @@ ld (missile_y), a    ; end of this missile's journey
 jr blankold
 
 noinvader:
+
 
 ; display missile
 ld a, (missile_x)

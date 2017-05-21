@@ -23,7 +23,11 @@ const char * forth_var[] = {
     "bombs",
     "last-dropper",
     "bomb-rel-idx",
-    "inv-rows 1- inv-cols * inv-state +"
+    "inv-rows 1- inv-cols * inv-state +",
+    "mother-x",
+    "mother-state",
+    "mother-dir",
+    "disp-mother-ch"
 };
 
 #define maxfv (sizeof (forth_var) / sizeof (const char *))
