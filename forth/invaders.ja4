@@ -297,7 +297,7 @@ decimal
 10 constant inv-cols
 5 constant inv-rows
 2 constant init-inv-start-y
-0 variable inv-period
+0 variable inv-cnt
 2 variable inv-start-y
 0 variable inv-x
 0 variable inv-y
@@ -450,9 +450,6 @@ create bombs-away
     3A c, inv-y , 81 c, 77 c, 2B c, CB c, 22 c,
     3A c, inv-x , 82 c, 77 c, FD c, E9 c,
 
-create pause
-    DF c, 76 c, 1D c, 20 c, FC c, FD c, E9 c,
-
 create disp-mother
     3A c, mother-state , FE c, 00 c, 28 c, 40 c, FE c,
     01 c, 20 c, 14 c, 3A c, mother-x , 0E c, 20 c,
@@ -495,6 +492,31 @@ decimal
     then
 ;
 
+: set-counter-period
+    1+ c!
+;
+
+: counter-zero?
+    c@ 0=
+;
+
+: dec-counter-zero?
+    dup c@ 1- dup 0< if
+        over 1+ c@ +
+    then
+    dup 0= swap rot c!
+;
+
+: pause ( n -- xAce emulator friendly pause for n 50th sec)
+    0 do
+        15403 c@
+        begin
+            dup 15403 c@ = 0=
+        until
+        drop
+    loop
+;
+
 : move-ship ( process keyboard input and update player)
     ship-x @ old-ship-x !
     65278 in 4 and 0= if    ( left key pressed)
@@ -533,8 +555,8 @@ decimal
 ;
 
 : set-inv-period
-    ( invaders-left @ 4 / 2+ inv-period ! )
-    20 inv-period !  ( temp setting to make testing easier )
+    invaders-left @ 2 / 2+ inv-cnt set-counter-period
+    ( 20 inv-cnt set-counter-period )
 ;
 
 : move-invaders
@@ -587,6 +609,7 @@ loop
         disp-barricades
     then
     inv-rows inv-cols * invaders-left !
+    set-inv-period
 ;
 
 : .S
@@ -655,17 +678,17 @@ loop
 
 : lose-life
     ship-y ship-x @ 8 / at ." **"
-    life @ 1- life !
-    disp-lives
     ( give the player a sporting chance, let all bombs descend before new life)
     begin
         move-bombs
         disp-bombs call
-        10 pause call ( fixme: will figure out proper timing later)
+        10 pause ( fixme: will figure out proper timing later)
         no-bombs-in-flight?
     until
     0 ship-hit !
-    10 pause call
+    life @ 1- life !
+    disp-lives
+    10 pause
 ;
 
 : move-mother
@@ -704,8 +727,7 @@ loop
             then
         then
         disp-ship call
-        dup
-        inv-period @ mod 0= if disp-invaders call then
+        inv-cnt counter-zero? if disp-invaders call then
         dup mother-period and 0= if disp-mother call then
         disp-missile call
         disp-bombs call
@@ -722,8 +744,7 @@ loop
         1+
         move-missile
         move-ship
-        dup
-        inv-period @ mod 0= if move-invaders then
+        inv-cnt dec-counter-zero? if move-invaders then
         dup bomb-period and 0= if move-bombs then
         dup bomb-rel-period and 0= if bombs-away call then
         dup mother-period and 0= if move-mother then
@@ -743,13 +764,16 @@ loop
     create-udgs
     invis cls
     0 0 at ." SCORE 00000000"
+    0 inv-cnt !
     init-invaders
     4 life !
     disp-lives
-    50 pause call
+    50 pause
     life @ 1- life !
     disp-lives
     game-loop
-    12 12 at ." GAME OVER" cr
+    11 11 at 11 spaces
+    12 11 at ."  GAME OVER "
+    13 11 at 11 spaces cr
     vis
 ;
