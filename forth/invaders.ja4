@@ -722,7 +722,9 @@ loop
     begin
         invaders-left @ 0= if
             no-bombs-in-flight? if
-                inv-start-y @ 1+ inv-start-y !
+                inv-start-y @ inv-rows 2 * + 2+ ship-y < if
+                    inv-start-y @ 1+ inv-start-y !
+                then
                 init-invaders
             then
         then
