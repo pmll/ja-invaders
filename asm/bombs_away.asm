@@ -61,7 +61,7 @@ bit 0, (hl)
 pop hl
 jr z, foundinv
 ld a, d
-; the bottom invader of this column has turned down the change to drop a bomb
+; the bottom invader of this column has turned down the chance to drop a bomb
 ; move on to the next column
 jr nextcol
 

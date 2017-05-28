@@ -28,7 +28,8 @@ const char * forth_var[] = {
     "mother-state",
     "mother-dir",
     "disp-mother-ch",
-    "upd-score"
+    "upd-score",
+    "temp-store"
 };
 
 #define maxfv (sizeof (forth_var) / sizeof (const char *))

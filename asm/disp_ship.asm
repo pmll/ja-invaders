@@ -5,7 +5,6 @@ include 'data.inc'
 ship_display_start: equ display_start + (22 * 32)
 
 ld b, 0
-ld hl, ship_display_start
 ld a, (ship_x)
 ld c, a
 

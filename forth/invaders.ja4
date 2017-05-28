@@ -330,6 +330,8 @@ decimal
 0 variable mother-state
 0 variable mother-dir
 
+0 variable temp-store
+
 : reserve-bytes
     0 do 0 c, loop
 ;
@@ -341,10 +343,10 @@ create bombs max-bombs reserve-bytes
 16 base c!
 
 create xyadd
-    21 c, 00 c, 24 c, 78 c, 06 c, 00 c, CB c, 21 c,
-    CB c, 21 c, CB c, 21 c, CB c, 21 c, CB c, 10 c,
-    CB c, 21 c, CB c, 10 c, 09 c, 06 c, 00 c, 4F c,
-    CB c, 79 c, 28 c, 02 c, 06 c, FF c, 09 c, C9 c,
+    26 c, 00 c, 69 c, 48 c, 06 c, 00 c, CB c, 79 c,
+    28 c, 02 c, 06 c, FF c, CB c, 25 c, CB c, 25 c,
+    CB c, 25 c, 29 c, 29 c, 09 c, 01 c, 00 c, 24 c,
+    09 c, C9 c,
 
 create disp-mother-ch
     CB c, 7F c, C0 c, FE c, 20 c, D0 c, 5F c, 16 c,
@@ -356,14 +358,13 @@ create upd-score
     77 c, C9 c,
 
 create disp-ship
-    06 c, 00 c, 21 c, C0 c, 26 c, 3A c, ship-x ,
-    4F c, CB c, 39 c, CB c, 39 c, CB c, 39 c, E6 c,
-    07 c, 57 c, CB c, 22 c, 21 c, C0 c, 26 c, 09 c,
-    3A c, old-ship-x , CB c, 3F c, CB c, 3F c, CB c,
-    3F c, B9 c, 28 c, 0E c, 38 c, 08 c, 23 c, 23 c,
-    36 c, 20 c, 2B c, 2B c, 18 c, 04 c, 2B c, 36 c,
-    20 c, 23 c, 14 c, 72 c, 23 c, 14 c, 72 c, FD c,
-    E9 c,
+    06 c, 00 c, 3A c, ship-x , 4F c, CB c, 39 c,
+    CB c, 39 c, CB c, 39 c, E6 c, 07 c, 57 c, CB c,
+    22 c, 21 c, C0 c, 26 c, 09 c, 3A c, old-ship-x ,
+    CB c, 3F c, CB c, 3F c, CB c, 3F c, B9 c, 28 c,
+    0E c, 38 c, 08 c, 23 c, 23 c, 36 c, 20 c, 2B c,
+    2B c, 18 c, 04 c, 2B c, 36 c, 20 c, 23 c, 14 c,
+    72 c, 23 c, 14 c, 72 c, FD c, E9 c,
 
 create update-inv-stats
     3E c, 00 c, 32 c, invaders-left , 67 c, 2E c, 0A c,
@@ -394,46 +395,43 @@ create disp-invaders
 
 create disp-missile
     3A c, missile-x , CB c, 3F c, CB c, 3F c, CB c,
-    3F c, 47 c, 3A c, missile-y , 4F c, CD c, xyadd ,
-    3A c, missile-y , A7 c, 28 c, 4D c, FE c,
-    02 c, 20 c, 3D c, 3A c, mother-state , FE c, 02 c,
-    20 c, 36 c, 3A c, missile-x , CB c, 3F c, CB c,
-    3F c, CB c, 3F c, 47 c, 3A c, mother-x , 3D c,
-    B8 c, 30 c, 25 c, C6 c, 03 c, B8 c, 38 c, 20 c,
-    E5 c, 0E c, 2A c, CD c, disp-mother-ch , 3D c, CD c,
-    disp-mother-ch , 3D c, CD c, disp-mother-ch , 3E c, 0A c,
-    CD c, upd-score , E1 c, 3E c, 01 c, 32 c, mother-state ,
-    3E c, 00 c, 32 c, missile-y , 18 c, 0C c,
-    7E c, FE c, A0 c, 20 c, 09 c, 36 c, 20 c, 3E c,
-    00 c, 32 c, missile-y , 18 c, 73 c, 3A c, inv-x ,
-    4F c, 3A c, missile-x , CB c, 3F c, CB c,
-    3F c, CB c, 3F c, 91 c, CB c, 79 c, 20 c, 02 c,
-    38 c, 57 c, CB c, 47 c, 20 c, 53 c, FE c, 13 c,
-    30 c, 4F c, 4F c, 3A c, inv-y , 47 c, 3A c,
-    missile-y , 90 c, 38 c, 44 c, CB c, 47 c, 20 c,
-    40 c, FE c, 09 c, 30 c, 3C c, E5 c, 21 c, inv-state ,
-    47 c, CB c, 38 c, CB c, 39 c, 79 c, C6 c,
-    0A c, 10 c, FC c, 06 c, 00 c, 4F c, 09 c, 7E c,
-    FE c, 02 c, 28 c, 03 c, E1 c, 18 c, 22 c, 3E c,
-    01 c, 77 c, 3A c, inv-y , 47 c, 3A c, missile-y ,
-    90 c, C6 c, 02 c, CB c, 3F c, CB c, 3F c,
-    ED c, 44 c, C6 c, 03 c, CD c, upd-score , E1 c,
-    36 c, 2A c, 3E c, 00 c, 32 c, missile-y , 18 c,
-    08 c, 3A c, missile-x , E6 c, 07 c, C6 c, 18 c,
-    77 c, 01 c, 20 c, 00 c, 09 c, 7E c, D6 c, 18 c,
-    38 c, 06 c, D6 c, 08 c, 30 c, 02 c, 36 c, 20 c,
-    FD c, E9 c,
+    3F c, 32 c, temp-store , 47 c, 3A c, missile-y ,
+    4F c, CD c, xyadd , A7 c, 28 c, 45 c, FE c,
+    02 c, 20 c, 36 c, 3A c, mother-state , FE c, 02 c,
+    20 c, 2F c, 3A c, temp-store , 47 c, 3A c, mother-x ,
+    3D c, B8 c, 30 c, 24 c, C6 c, 03 c, B8 c,
+    38 c, 1F c, E5 c, 0E c, 2A c, CD c, disp-mother-ch ,
+    3D c, CD c, disp-mother-ch , 3D c, CD c, disp-mother-ch ,
+    3E c, 0A c, CD c, upd-score , E1 c, 3E c, 01 c,
+    32 c, mother-state , AF c, 32 c, missile-y , 18 c,
+    79 c, 7E c, FE c, A0 c, 20 c, 08 c, 36 c, 20 c,
+    AF c, 32 c, missile-y , 18 c, 6C c, 3A c, inv-x ,
+    4F c, 3A c, temp-store , 91 c, CB c, 79 c,
+    20 c, 02 c, 38 c, 56 c, CB c, 47 c, 20 c, 52 c,
+    FE c, 13 c, 30 c, 4E c, 4F c, 3A c, inv-y ,
+    47 c, 3A c, missile-y , 90 c, 38 c, 43 c, CB c,
+    47 c, 20 c, 3F c, FE c, 09 c, 30 c, 3B c, E5 c,
+    21 c, inv-state , 47 c, CB c, 38 c, CB c, 39 c,
+    79 c, C6 c, 0A c, 10 c, FC c, 06 c, 00 c, 4F c,
+    09 c, 7E c, FE c, 02 c, 28 c, 03 c, E1 c, 18 c,
+    21 c, 3E c, 01 c, 77 c, 3A c, inv-y , 47 c,
+    3A c, missile-y , 90 c, C6 c, 02 c, CB c, 3F c,
+    CB c, 3F c, ED c, 44 c, C6 c, 03 c, CD c, upd-score ,
+    E1 c, 36 c, 2A c, AF c, 32 c, missile-y ,
+    18 c, 08 c, 3A c, missile-x , E6 c, 07 c, C6 c,
+    18 c, 77 c, 01 c, 20 c, 00 c, 09 c, 7E c, D6 c,
+    18 c, 38 c, 06 c, D6 c, 08 c, 30 c, 02 c, 36 c,
+    20 c, FD c, E9 c,
 
 create disp-bombs
-    21 c, bombs , 16 c, 05 c, 7E c, 47 c, 23 c,
-    7E c, FE c, 18 c, 28 c, 2F c, 4F c, 5F c, E5 c,
-    CD c, xyadd , 7B c, FE c, 17 c, 28 c, 16 c,
-    7E c, FE c, A0 c, 20 c, 0B c, 3E c, 20 c, 36 c,
-    20 c, E3 c, 3E c, 18 c, 77 c, E3 c, 18 c, 06 c,
-    FE c, 20 c, 20 c, 02 c, 36 c, 1B c, 01 c, 20 c,
-    00 c, A7 c, ED c, 42 c, 7E c, FE c, 1B c, 20 c,
-    02 c, 36 c, 20 c, E1 c, 23 c, 15 c, 20 c, C5 c,
-    FD c, E9 c,
+    21 c, bombs , 16 c, 05 c, 46 c, 23 c, 7E c,
+    FE c, 18 c, 28 c, 2D c, 4F c, E5 c, CD c, xyadd ,
+    FE c, 17 c, 28 c, 16 c, 7E c, FE c, A0 c,
+    20 c, 0B c, 3E c, 20 c, 36 c, 20 c, E3 c, 3E c,
+    18 c, 77 c, E3 c, 18 c, 06 c, FE c, 20 c, 20 c,
+    02 c, 36 c, 1B c, 01 c, 20 c, 00 c, A7 c, ED c, 42 c,
+    7E c, FE c, 1B c, 20 c, 02 c, 36 c, 20 c,
+    E1 c, 23 c, 15 c, 20 c, C8 c, FD c, E9 c,
 
 create bombs-away
     21 c, bombs , 06 c, 05 c, 23 c, 7E c, FE c,

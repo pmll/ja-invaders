@@ -25,6 +25,7 @@ mother_state:       equ 0x16ED
 mother_dir:         equ 0x17ED
 disp_mother_ch:     equ 0x18ED
 upd_score:          equ 0x19ED
+temp_store:         equ 0x1AED
 
 ; constants
 inv_rows:         equ 5

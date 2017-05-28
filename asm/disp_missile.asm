@@ -2,18 +2,20 @@
 
 include 'data.inc'
 
+missile_ch_x: equ temp_store
+
 ; load hl with screen address of missile
 ld a, (missile_x)
 srl a
 srl a
 srl a
+ld (missile_ch_x), a
 ld b, a
 ld a, (missile_y)
 ld c, a
 call xyadd
 
 ; at end of flight?
-ld a, (missile_y)
 and a
 jr z, blankoldstep      ; out of range for direct relative jump
 
@@ -23,10 +25,7 @@ jr nz, nomother
 ld a, (mother_state)
 cp mother_in_flight
 jr nz, nomother
-ld a, (missile_x)
-srl a
-srl a
-srl a
+ld a, (missile_ch_x)
 ld b, a
 ld a, (mother_x)
 dec a
@@ -51,9 +50,9 @@ pop hl
 ld a, mother_dying
 ld (mother_state), a
 ; missile is at end of journey
-ld a, 0
-ld (missile_y), a    ; end of this missile's journey
-jr blankoldstep      ; out of range for direct relative jump
+xor a
+ld (missile_y), a
+jr blankold
 
 nomother:
 
@@ -64,7 +63,7 @@ jr nz, nobarricade
 
 ; we've hit a barricade, that's the end of this missile's journey
 ld (hl), erase_gr
-ld a, 0
+xor a
 ld (missile_y), a
 blankoldstep:
 jr blankold
@@ -74,10 +73,7 @@ nobarricade:
 ; check for invader collision
 ld a, (inv_x)
 ld c, a
-ld a, (missile_x)
-srl a
-srl a
-srl a
+ld a, (missile_ch_x)
 sub c
 bit 7, c ; inv_x is allowed to be negative, in which case, ignore carry flag
 jr nz, ignorecarry
@@ -140,7 +136,7 @@ add a, 0 + (inv_rows + 1) / 2
 call upd_score
 pop hl
 ld (hl), explode_gr  ; visible death on screen
-ld a, 0
+xor a
 ld (missile_y), a    ; end of this missile's journey
 jr blankold
 

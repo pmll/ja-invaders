@@ -3,22 +3,18 @@
 include "data.inc"
 
 ld hl, bombs
-
 ld d, max_bombs
 
 bombloop:
-ld a, (hl)
-ld b, a
+ld b, (hl)
 inc hl
 ld a, (hl)
 cp ship_y + 2
 jr z, bombinactive
 ld c, a
-ld e, a
 push hl
 call xyadd
 
-ld a, e
 cp ship_y + 1
 jr z, nobomb
 
@@ -45,7 +41,7 @@ ld (hl), bomb_gr
 
 nobomb:
 ld bc, 32
-and a   ; just to clear carry
+and a   ; clear carry
 sbc hl, bc
 ld a, (hl)
 cp bomb_gr

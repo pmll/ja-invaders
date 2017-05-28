@@ -3,7 +3,7 @@
 include 'data.inc'
 
 ; prime rightmost, leftmost, bottommost invader and invaders left
-ld a, 0
+xor a
 ld (invaders_left), a
 ld h, a         ; h = leftmost
 ld l, inv_cols  ; l = rightmost
