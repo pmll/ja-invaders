@@ -326,7 +326,7 @@ decimal
 100 constant mother-cycle
 2 constant mother-y
 0 variable mother-x
-0 variable mother-countdown
+0 variable mother-cnt
 0 variable mother-state
 0 variable mother-dir
 
@@ -547,7 +547,7 @@ decimal
     then
 ;
 
-: move-down
+: move-inv-down
     inv-y @ 1+ inv-y !
     inv-dir @ negate inv-dir !
 ;
@@ -566,7 +566,7 @@ decimal
         ( moving right...)
         inv-x @ rightmost-inv @ dup + + 31 =
         if
-            move-down
+            move-inv-down
         else
             inv-x @ 1+ inv-x !
         then
@@ -574,7 +574,7 @@ decimal
         ( moving left...)
         inv-x @ leftmost-inv @ dup + + 0=
         if
-            move-down
+            move-inv-down
         else
             inv-x @ 1- inv-x !
         then
@@ -692,9 +692,7 @@ loop
 : move-mother
     mother-state @ dup mother-waiting = if
         drop
-        mother-countdown @ 1- dup 0= if
-            drop
-            mother-cycle mother-countdown !
+        mother-cnt dec-counter-zero? if
             mother-in-flight mother-state !
             mother-dir @ negate dup mother-dir !
             0< if
@@ -702,8 +700,6 @@ loop
             else
                 -2 mother-x !
             then
-        else
-            mother-countdown !
         then
     else
         mother-in-flight = if
@@ -757,7 +753,7 @@ loop
     0 ship-hit !
     0 missile-y !
     init-inv-start-y inv-start-y !
-    mother-cycle mother-countdown !
+    mother-cycle mother-cnt set-counter-period
     -1 mother-dir !
     mother-waiting mother-state !
     init-bombs
