@@ -23,11 +23,9 @@ cp barricade_gr
 jr nz, nobarricade
 
 ; bomb has hit a barricade, that's the end of it's journey
-ld a, erase_gr
 ld (hl), erase_gr
 ex (sp), hl
-ld a, ship_y + 2
-ld (hl), a
+ld (hl), ship_y + 2
 ex (sp), hl
 jr nobomb
 

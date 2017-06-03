@@ -2,14 +2,12 @@
 
 include 'data.inc'
 
-missile_ch_x: equ temp_store
-
 ; load hl with screen address of missile
 ld a, (missile_x)
 srl a
 srl a
 srl a
-ld (missile_ch_x), a
+ld d, a
 ld b, a
 ld a, (missile_y)
 ld c, a
@@ -17,30 +15,21 @@ call xyadd
 
 ; at end of flight?
 and a
-jr z, blankoldstep      ; out of range for direct relative jump
+jr z, blankold
+
+ld a, (hl)     ; a = character under the next missile position
 
 ; check for mother ship collision
-cp mother_y
+cp mother_gr
 jr nz, nomother
-ld a, (mother_state)
-cp mother_in_flight
-jr nz, nomother
-ld a, (missile_ch_x)
-ld b, a
-ld a, (mother_x)
-dec a
-cp b
-jr nc, nomother
-add a, 3
-cp b
-jr c, nomother
-; hit mothership, make it explode
 push hl
+; hit mothership, make it explode
+ld a, (mother_x)
 ld c, explode_gr
 call disp_mother_ch
-dec a
+inc a
 call disp_mother_ch
-dec a
+inc a
 call disp_mother_ch
 ; update the score
 ld a, 10
@@ -50,104 +39,75 @@ pop hl
 ld a, mother_dying
 ld (mother_state), a
 ; missile is at end of journey
-xor a
-ld (missile_y), a
-jr blankold
+jr end_of_journey
 
 nomother:
-
 ; check for collision with barricade
-ld a,(hl)
 cp barricade_gr
 jr nz, nobarricade
 
 ; we've hit a barricade, that's the end of this missile's journey
 ld (hl), erase_gr
-xor a
-ld (missile_y), a
-blankoldstep:
-jr blankold
+jr end_of_journey
 
 nobarricade:
-
 ; check for invader collision
+cp invader_gr
+jr c, noinvader
+cp invader_gr + (((inv_rows - 1) >> 1) * 2) + 2
+jr nc, noinvader
+; hit an invader, update the score
+push hl
+sub invader_gr
+srl a
+inc a
+call upd_score
+; flag invader as dying
+ld hl, inv_state
 ld a, (inv_x)
 ld c, a
-ld a, (missile_ch_x)
+ld a, d
 sub c
-bit 7, c ; inv_x is allowed to be negative, in which case, ignore carry flag
-jr nz, ignorecarry
-jr c, noinvader
-ignorecarry:
-bit 0, a
-jr nz, noinvader  ; invaders will be at an even offset
-cp inv_cols * 2 - 1
-jr nc, noinvader
-; ok, missile x is in range for an invader, what about y?
+srl a       ; x offset into inv_state
 ld c, a
-ld a, (inv_y)
-ld b, a
-ld a, (missile_y)
-sub b
-jr c, noinvader
-bit 0, a
-jr nz, noinvader
-cp inv_rows * 2 - 1
-jr nc, noinvader
-; missile y is in range for an invader, is there actually a live one there?
-push hl
-ld hl, inv_state
-
-ld b, a
-srl b
-srl c
-ld a, c
-
-rowloop:
-add a, inv_cols
-djnz rowloop
-
 ld b, 0
-ld c, a
 add hl, bc
-ld a, (hl)
-cp 2
-jr z, hitinvader
-pop hl
-jr noinvader
 
-hitinvader:
-; ok, we have hit an invader
-ld a, 1
-ld (hl), a  ; invader flagged as dying
-; update the score
 ld a, (inv_y)
-ld b, a
+ld c, a
 ld a, (missile_y)
-sub b
-if inv_rows & 1
-; if we have an odd number of rows, the top row alone will have the top score
-add a, 2
-endif
-srl a
-srl a
-neg
-add a, 0 + (inv_rows + 1) / 2
-call upd_score
+sub c
+srl a       ; y offset into inv_state
+jr z, y_offset_done
+ld bc, inv_cols
+
+y_offset_loop:
+add hl, bc
+dec a
+jr nz, y_offset_loop
+
+y_offset_done:
+ld a, 1
+ld (hl), a 
 pop hl
-ld (hl), explode_gr  ; visible death on screen
-xor a
-ld (missile_y), a    ; end of this missile's journey
-jr blankold
+; show an explosion
+ld (hl), explode_gr
+
+; end of missile journey
+jr end_of_journey
 
 noinvader:
-
-
 ; display missile
 ld a, (missile_x)
 and 7
 add a, missile_gr
 ld (hl), a
+jr blankold
+
+end_of_journey:
+; end of this missile's journey
+xor a
+ld (missile_y), a
 
 ; blank old missile below current position, if there is one
 blankold:
